@@ -1,0 +1,145 @@
+package fin;
+
+import java.util.*;
+
+public class AyseoBuddyManager {
+    List<AyseoBuddy> memberList = new ArrayList<>();
+    Scanner scanner = new Scanner(System.in);
+
+    public void addMember(AyseoBuddy a) {
+        if (memberList.stream().anyMatch(ayseoBuddy -> ayseoBuddy.name.equals(a.name))) {
+            System.out.println(a.name + "은 이미 존재합니다.");
+        } else {
+            memberList.add(a);
+            System.out.println(a.name + "이 등록되었습니다.");
+        }
+    }
+
+    public void menu() {
+        while (true) {
+            System.out.println("=== 친구 관리 프로그램 ===");
+            System.out.println("1)친구추가 2)문자보내기 3)문자확인하기 4)전체문자확인하기 5)친구목록 6)프레임창 검색");
+            System.out.print("메뉴선택: ");
+            try {
+                int input = scanner.nextInt();
+                switch (input) {
+                    case 1 -> menu1();
+                    case 2 -> menu2();
+                    case 3 -> menu3();
+                    case 4 -> menu4();
+                    case 5 -> menu5();
+                    case 6 -> menu6();
+                    default -> System.out.println("1~6 사이의 정수를 입력하세요.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("올바른 정수를 입력하세요.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public AyseoBuddy findBuddyByName(String name) {
+        for (AyseoBuddy buddy : memberList) {
+            if (buddy.name.equals(name)) {
+                return buddy;
+            }
+        }
+        return null;
+    }
+
+    private void menu6() {
+        new AyseoMainFrame("202311303 서아영", this);
+    }
+
+    private void menu5() {
+        System.out.print("검색할 친구이름: ");
+        String input = scanner.next();
+        AyseoBuddy a = findBuddyByName(input);
+        if (a == null) {
+            System.out.println(input + "은(는) 존재하지 않는 회원입니다.");
+            return;
+        }
+        System.out.println(input + "의 친구 목록");
+        for (AyseoBuddy b : a.buddyList) {
+            long count = a.messageList.stream().filter(m -> m.user1.equals(b.name)).count();
+            System.out.println(b.name + "(" + count + "건)");
+        }
+    }
+
+    private void menu4() {
+        System.out.print("문자 확인할 회원명: ");
+        String input = scanner.next();
+        AyseoBuddy a = findBuddyByName(input);
+        if (a == null) {
+            System.out.println(input + "은(는) 존재하지 않는 회원입니다.");
+            return;
+        }
+        if (a.messageList.isEmpty()) {
+            System.out.println("수신된 메시지가 없습니다.");
+        } else {
+            for (AyseoMessage message : a.messageList) {
+                System.out.println(message);
+            }
+        }
+    }
+
+    private void menu3() {
+        System.out.print("수신 메시지 확인 (예, 홍길동 김길동): ");
+        String input1 = scanner.next();
+        String input2 = scanner.next();
+        AyseoBuddy a1 = findBuddyByName(input1);
+        AyseoBuddy a2 = findBuddyByName(input2);
+
+        if (a1 == null || a2 == null) {
+            System.out.println("한쪽 또는 양쪽 친구가 존재하지 않습니다.");
+            return;
+        }
+        if (a1.buddyList.contains(a2)) {
+            for (AyseoMessage m : a2.messageList) {
+                if (m.user1.equals(input1)) {
+                    System.out.println(m);
+                }
+            }
+        } else {
+            System.out.println(input1 + "은 " + input2 + "의 친구가 아닙니다.");
+        }
+    }
+
+    private void menu2() {
+        System.out.print("문자 보낼 친구 및 메시지 입력 (예, 홍길동 김길동 밥먹자!!): ");
+        String input1 = scanner.next();
+        String input2 = scanner.next();
+        String message = scanner.nextLine().trim();
+
+        AyseoBuddy a1 = findBuddyByName(input1);
+        AyseoBuddy a2 = findBuddyByName(input2);
+
+        if (a1 != null && a2 != null && a1.buddyList.contains(a2)) {
+            a2.messageList.add(new AyseoMessage(input1, input2, message));
+            System.out.println("메시지 전송 완료: [From: " + input1 + "] " + message);
+        } else {
+            System.out.println("오류: 친구 관계가 아니거나 존재하지 않는 친구입니다.");
+        }
+    }
+
+    private void menu1() {
+        System.out.print("친구 관계 입력 (예, 홍길동 김길동): ");
+        String input1 = scanner.next();
+        String input2 = scanner.next();
+
+        AyseoBuddy a1 = findBuddyByName(input1);
+        AyseoBuddy a2 = findBuddyByName(input2);
+
+        if (a1 != null && a2 != null) {
+            if (!a1.buddyList.contains(a2)) {
+                a1.buddyList.add(a2);
+                a2.buddyList.add(a1);
+                System.out.println(input1 + "과 " + input2 + "은 이제 친구입니다.");
+            } else {
+                System.out.println("오류: 이미 존재하는 친구입니다.");
+            }
+        } else {
+            System.out.println("한쪽 또는 양쪽 친구가 존재하지 않습니다.");
+        }
+    }
+}
