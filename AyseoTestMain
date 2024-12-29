@@ -1,0 +1,19 @@
+package fin;
+
+public class AyseoTestMain {
+    public static void main(String[] args) {
+        AyseoBuddyManager manager = new AyseoBuddyManager();
+
+        manager.addMember(new AyseoBuddy("홍길동"));
+        manager.addMember(new AyseoBuddy("홍길동"));
+        manager.addMember(new AyseoBuddy("이길동"));
+        manager.addMember(new AyseoBuddy("김길동"));
+        manager.addMember(new AyseoBuddy("박길동"));
+        manager.addMember(new AyseoBuddy("고길동"));
+        manager.addMember(new AyseoBuddy("최길동"));
+
+        manager.menu();
+
+        new AyseoMainFrame("202311303 서아영", manager);
+    }
+}
