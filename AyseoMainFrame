@@ -1,0 +1,86 @@
+package fin;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class AyseoMainFrame extends JFrame {
+    AyseoBuddyManager ayseoBuddyManager;
+
+    Container frame = getContentPane();
+    JPanel northPanel;
+    JPanel centerPanel;
+    JComboBox<String> comboBox;
+    JTextField textField;
+    JTextArea textArea = new JTextArea();
+
+    String[] comboContent = {"수신메세지", "친구리스트"};
+
+    public AyseoMainFrame(String title, AyseoBuddyManager manager) {
+        super(title);
+        this.setSize(500, 500);
+        init();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+        ayseoBuddyManager = manager;
+    }
+
+    private void init() {
+        initNorthPanel();
+        initCenterPanel();
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void initCenterPanel() {
+        centerPanel = new JPanel();
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        textArea.setEditable(false);
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        frame.add(centerPanel, BorderLayout.CENTER);
+    }
+
+
+    private void initNorthPanel() {
+        northPanel = new JPanel();
+        comboBox = new JComboBox<>(comboContent);
+        comboBox.setSelectedIndex(0);
+
+        textField = new JTextField(15);
+        textField.addActionListener(e -> {
+            String input = textField.getText().trim();
+            textArea.setText("");
+            int index = comboBox.getSelectedIndex();
+            if (index == 0) {
+                AyseoBuddy a = ayseoBuddyManager.findBuddyByName(input);
+                if (a == null) {
+                    textArea.append(input + "은(는) 존재하지 않는 회원입니다.\n");
+                    return;
+                }
+                if (a.messageList.isEmpty()) {
+                    textArea.append("수신된 메시지가 없습니다.\n");
+                } else {
+                    for (AyseoMessage message : a.messageList) {
+                        textArea.append(message.toString() + "\n");
+                    }
+                }
+            } else if (index == 1) {
+                AyseoBuddy a = ayseoBuddyManager.findBuddyByName(input);
+                if (a == null) {
+                    textArea.append(input + "은(는) 존재하지 않는 회원입니다.\n");
+                    return;
+                }
+                textArea.append(input + "의 친구 목록\n");
+                for (AyseoBuddy b : a.buddyList) {
+                    long count = a.messageList.stream().filter(m -> m.user1.equals(b.name)).count();
+                    textArea.append(b.name + "(" + count + "건)\n");
+                }
+            }
+        });
+
+        northPanel.add(comboBox);
+        northPanel.add(textField);
+        frame.add(northPanel, BorderLayout.NORTH);
+    }
+}
