@@ -1,0 +1,15 @@
+package fin;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class AyseoBuddy {
+    String name;
+    List<AyseoBuddy> buddyList = new ArrayList<>();
+    List<AyseoMessage> messageList = new ArrayList<>();
+
+    public AyseoBuddy(String name) {
+        this.name = name;
+    }
+
+}
